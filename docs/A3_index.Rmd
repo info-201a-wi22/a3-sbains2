@@ -1,0 +1,121 @@
+---
+title: "Incarceration: Demographics of Male and Minority Population"
+author: "Sahil Bains"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+``` {r warning = FALSE, include = FALSE, message = FALSE, echo = FALSE}
+library(ggplot2)
+library(plotly)
+library(tidyverse)
+library(scales)
+library(dplyr)
+library(maps)
+setwd("~/INFO-201code/a3-starter-sbains2/a3-sbains2/docs")
+```
+
+
+## **Assignment 3: Incarceration**
+
+
+### _Part 1: Statistics_
+
+#### **Statistic 1:**
+##### For the first statistic, I decided to calculate the overall incarceration population from 1970 to 2018, to initially gain a better understanding of how the incarcerations had changed overtime with the general population. The difference between the population was 2,208,470.
+
+
+#### **Statistic 2:**
+##### When considering why I decided to calculate the population amount of Blacks vs. Whites incarcerated in Texas and in Washington state was to initially look at the disparities of racial incarcerations between Washington State and Texas, and then summarize the data to view the ratio of Blacks vs. Whites in Texas. Part of the reason why I wanted to further analyze Texas was because of the population size, and the sociopolitical status.
+
+#### **Statistic 3:**
+##### When looking at why I calculated the year when incarcerations (both jails and prisons) were the highest, I was interested to first see the populations of both jails and prisons in a separate data frame. Once this was compiled, I wanted to subset the data to view the highest incarcerations in a single year; it was 2013.
+
+#### **Statistic 4:**
+##### The fourth statistic that I calculated was the state with the highest and lowest amount of male incarcerations. I found that California had the most and Maine and the least amount, which was somewhat expected when considering the general population distribution, but nonetheless important to determine and see if there were any states that had a disproportionate ratio of incarcerations to the overall population.
+
+#### **Statistic 5:**
+##### The fifth statistic that I wanted to analyze was finding and comparing the the amount of juvenile and adult males incarcerated per national level. The reasoning behind why I chose this was to originally see the rates and determine if overall adults had a higher rate of incarcerations or if the juveniles did. After looking through the data frame values, I decided to also make a time trend chart.
+
+### _Part 2: Charts_
+
+#### **Chart 1: Time-Trend**
+
+##### Reflection:
+For Chart 1, I was determined to find the time trend of the increased incarceration disparities between black and white people in all of the United States over the span of the data set. The reasoning for why I decided this was that by first visualizing the general racial disparities of incarceration gives a clear image of the rooted issue with the prison industrial complex - the unjustified mass imprisonment and forced labor onto blacks.
+
+##### Time-Trend Chart:
+``` {r echo = FALSE}
+read_it <- read_csv("/Users/sahilbains/INFO-201code/a3-starter-sbains2/a3-sbains2/docs/incarceration_trends.csv")
+
+
+
+men_prison_max_race<- read_it %>%
+  group_by(year) %>%
+  summarize(white_male_prison_pop = sum(white_male_prison_pop, na.rm = TRUE),
+            black_male_prison_pop = sum(black_male_prison_pop, na.rm = TRUE)) %>% 
+  subset(black_male_prison_pop > 0)
+
+racial_incarceration_disparities_timespan <- ggplot(men_prison_max_race, aes(x = year)) +
+  geom_line(mapping = aes(y = white_male_prison_pop, color = "white_male_prison_pop")) +
+  geom_line(mapping = aes(y = black_male_prison_pop, color = "black_male_prison_pop")) +
+  xlab('Years') +
+  ylab('Total Incarceration Population') +
+  labs(title = str_wrap('Total Incarcerations of Black and White Males in the US', 30)) +
+  theme(legend.position = c(0.35, 0.85)) +
+  scale_y_continuous(labels = comma)
+
+ggplotly(racial_incarceration_disparities_timespan)
+
+```
+#### **Chart 2:**
+
+##### Reflection:
+For Chart 2, I thought of finding the comparison of how many male juvenile vs adults were incarcerated over the span of the data set. The reasoning for why I decided to compile this chart was to get a clearer understanding of the frequency and values of how much male juveniles are incarcerated in comparison to how many male adults are.
+
+##### Chart 2:
+
+``` {r echo = FALSE}
+
+male_juvenile_adult_incarceration <- read_it %>%
+  group_by(year) %>%
+  summarize(male_adult_jail_pop = sum(male_prison_pop, na.rm = TRUE),
+            male_juvenile_jail_pop = sum(male_jail_pop, na.rm = TRUE)) %>%
+  subset(male_juvenile_jail_pop > 0,
+         male_adult_jail_pop > 0)
+
+
+male_juveline_adult_jail_chart <- ggplot(male_juvenile_adult_incarceration, aes(male_juvenile_adult_incarceration)) +
+  geom_col(mapping = aes(x = year, 
+                         y = male_adult_jail_pop, 
+                         fill = 'Adults')) +
+  geom_col(mapping = aes(x = year, 
+                         y = male_juvenile_jail_pop, 
+                         fill = 'Juveniles')) +
+  xlab('Years') +
+  ylab('Total Population Jailed') +
+  scale_y_continuous(labels = comma) +
+  labs(title = str_wrap("Male Juvenile vs. Adult Incarcerated", 30)) +
+   scale_fill_brewer(palette = "Accent")
+
+
+ggplotly(male_juveline_adult_jail_chart)
+
+```
+
+### _Part 3: Map_
+
+#### Map:
+
+#### Reflection:
+
+For my map, I decided to plot the points where all of the total black and white incarceration population in Texas in the year 2018. I found this an interesting map to make because of the many differing options with how to display the population displacement across the counties.
+
+
+
+
+
